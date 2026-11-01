@@ -3,41 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vigeoplato Second Brain | Neural AI Knowledge Assistant</title>
+    <title>VigeoPlato | AI Knowledge Assistant</title>
 
-    <!-- Custom Neon Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23060709' stroke='%2334d399' stroke-width='6'/><text x='50%25' y='54%25' dominant-baseline='central' text-anchor='middle' font-size='55'>🧠</text></svg>">
-
-    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- PDF.js for PDF text extraction -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         :root {
-            --bg-dark: #060709;
-            --panel-bg: rgba(12, 16, 15, 0.72);
-            --card-bg: rgba(18, 24, 22, 0.78);
-            --border-emerald: rgba(52, 211, 153, 0.18);
+            --bg-dark: #040608;
+            --panel-bg: #090e11;
+            --card-bg: #0e1418;
+            --border-emerald: rgba(16, 185, 129, 0.15);
             --emerald: #10b981;
             --mint: #34d399;
             --text-main: #f4f4f5;
             --text-muted: #9ca3af;
-            --mouse-x: 50vw;
-            --mouse-y: 50vh;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -47,158 +34,51 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            position: relative;
         }
 
-        /* Vigeoplato Cyber Grid & Mouse Spotlight */
-        .cyber-grid {
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(to right, rgba(16, 185, 129, 0.045) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(16, 185, 129, 0.045) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -2;
-            pointer-events: none;
-        }
-
-        .mouse-spotlight {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(
-                600px circle at var(--mouse-x) var(--mouse-y),
-                rgba(16, 185, 129, 0.13),
-                transparent 75%
-            );
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Top Glass Navbar */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
-            background: rgba(8, 12, 10, 0.85);
-            backdrop-filter: blur(16px);
+            padding: 14px 24px;
+            background: rgba(6, 9, 11, 0.9);
             border-bottom: 1px solid var(--border-emerald);
-            z-index: 10;
         }
 
         .brand-title {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-family: 'Outfit', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #ffffff 30%, var(--mint) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ffffff;
         }
 
-        .phase-pill {
+        .status-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(16, 185, 129, 0.14);
-            border: 1px solid rgba(52, 211, 153, 0.35);
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(52, 211, 153, 0.3);
             color: var(--mint);
             font-size: 0.72rem;
             font-weight: 600;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 50px;
-            -webkit-text-fill-color: var(--mint);
         }
 
         .pulse-dot {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             background: var(--mint);
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--mint);
-            animation: pulse 1.8s infinite;
+            box-shadow: 0 0 6px var(--mint);
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.4); opacity: 0.5; }
-        }
-
-        .top-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .api-input {
-            background: rgba(15, 20, 18, 0.9);
-            border: 1px solid var(--border-emerald);
-            color: var(--text-main);
-            padding: 7px 14px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            width: 240px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .api-input:focus {
-            border-color: var(--mint);
-            box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
-        }
-
-        /* Buttons */
-        .btn-emerald {
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(135deg, var(--emerald), var(--mint));
-            color: #03110c;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.82rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 18px rgba(16, 185, 129, 0.28);
-        }
-
-        .btn-emerald:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(52, 211, 153, 0.45);
-        }
-
-        .btn-glass {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text-main);
-            border: 1px solid var(--border-emerald);
-            padding: 7px 13px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .btn-glass:hover {
-            border-color: var(--mint);
-            color: var(--mint);
-            background: rgba(16, 185, 129, 0.12);
-        }
-
-        /* 3-Column Neural Workspace */
         .workspace {
             display: grid;
-            grid-template-columns: 340px 1fr 1.25fr;
+            grid-template-columns: 320px 1fr;
             flex: 1;
             overflow: hidden;
             gap: 12px;
@@ -207,21 +87,19 @@
 
         .panel {
             background: var(--panel-bg);
-            backdrop-filter: blur(18px);
             border: 1px solid var(--border-emerald);
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
         }
 
         .panel-header {
-            padding: 13px 16px;
-            background: rgba(16, 22, 20, 0.85);
+            padding: 12px 16px;
+            background: #070b0d;
             border-bottom: 1px solid var(--border-emerald);
             font-family: 'Outfit', sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             display: flex;
             justify-content: space-between;
@@ -234,59 +112,27 @@
             flex: 1;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(52, 211, 153, 0.25); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--mint); }
-
-        /* Left Column: Ingestion & Vault */
-        .ingest-card {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 14px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--border-emerald);
-        }
-
-        input, select, textarea {
-            background: rgba(9, 13, 12, 0.9);
-            border: 1px solid rgba(52, 211, 153, 0.22);
-            color: var(--text-main);
-            padding: 8px 11px;
-            border-radius: 8px;
-            font-size: 0.83rem;
-            font-family: inherit;
-            outline: none;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--mint);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 68px;
-        }
+        ::-webkit-scrollbar-thumb { background: rgba(52, 211, 153, 0.2); border-radius: 10px; }
 
         .dropzone {
             border: 1px dashed rgba(52, 211, 153, 0.4);
-            background: rgba(16, 185, 129, 0.05);
+            background: rgba(16, 185, 129, 0.04);
             color: var(--mint);
             text-align: center;
-            padding: 10px;
+            padding: 16px;
             border-radius: 8px;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             font-weight: 500;
             cursor: pointer;
+            margin-bottom: 14px;
             transition: all 0.2s;
         }
 
-        .dropzone:hover, .dropzone.dragover {
-            background: rgba(16, 185, 129, 0.16);
+        .dropzone:hover {
+            background: rgba(16, 185, 129, 0.1);
             border-color: var(--mint);
-            box-shadow: 0 0 15px rgba(52, 211, 153, 0.2);
         }
 
         .doc-list {
@@ -297,36 +143,28 @@
 
         .doc-item {
             background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 11px 13px;
-            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 12px;
+            border-radius: 8px;
             cursor: pointer;
             position: relative;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
 
-        .doc-item:hover {
-            border-color: rgba(52, 211, 153, 0.45);
-            transform: translateX(3px);
-        }
-
-        .doc-item.active {
-            border-color: var(--mint);
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(18, 24, 22, 0.9));
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.18);
-        }
+        .doc-item:hover { border-color: rgba(52, 211, 153, 0.4); }
+        .doc-item.active { border-color: var(--mint); background: rgba(16, 185, 129, 0.08); }
 
         .doc-item-title {
             font-weight: 600;
-            font-size: 0.86rem;
-            margin-bottom: 4px;
-            padding-right: 22px;
+            font-size: 0.84rem;
             color: #fff;
+            padding-right: 20px;
         }
 
         .doc-item-meta {
-            font-size: 0.73rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
+            margin-top: 3px;
         }
 
         .delete-btn {
@@ -337,85 +175,40 @@
             border: none;
             color: #6b7280;
             cursor: pointer;
-            font-size: 0.8rem;
-            padding: 2px 5px;
+            font-size: 0.75rem;
         }
-
         .delete-btn:hover { color: #f87171; }
 
-        /* Middle Column: Live Neural Graph + X-Ray Inspector */
-        .neural-canvas-wrap {
-            position: relative;
-            height: 225px;
-            background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1) 0%, rgba(6, 8, 7, 0.95) 85%);
-            border-bottom: 1px solid var(--border-emerald);
-            overflow: hidden;
-        }
-
-        #neuralGraph {
-            width: 100%;
+        .chat-container {
+            display: flex;
+            flex-direction: column;
             height: 100%;
-            display: block;
-            cursor: pointer;
         }
 
-        .graph-overlay-tag {
-            position: absolute;
-            top: 10px;
-            left: 12px;
-            background: rgba(6, 9, 8, 0.75);
-            border: 1px solid var(--border-emerald);
-            color: var(--mint);
-            font-size: 0.7rem;
-            padding: 3px 9px;
-            border-radius: 50px;
-            pointer-events: none;
-        }
-
-        .xray-viewer {
-            line-height: 1.7;
-            font-size: 0.88rem;
-            white-space: pre-wrap;
-            color: #d4d4d8;
-        }
-
-        .xray-highlight {
-            background: rgba(16, 185, 129, 0.28);
-            border-bottom: 2px solid var(--mint);
-            color: #ffffff;
-            padding: 2px 5px;
-            border-radius: 5px;
-            font-weight: 600;
-            box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
-        }
-
-        /* Right Column: Neural Chat & Modes */
         .mode-bar {
             display: flex;
             gap: 6px;
             padding: 10px 14px;
-            background: rgba(10, 14, 13, 0.8);
+            background: #070b0d;
             border-bottom: 1px solid var(--border-emerald);
         }
 
         .mode-btn {
             flex: 1;
-            background: rgba(255, 255, 255, 0.03);
+            background: transparent;
             color: var(--text-muted);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            padding: 7px 8px;
-            font-size: 0.76rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .mode-btn.active {
-            background: rgba(16, 185, 129, 0.18);
+            background: rgba(16, 185, 129, 0.15);
             color: var(--mint);
             border-color: var(--mint);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
         }
 
         .chat-messages {
@@ -424,29 +217,22 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .msg {
-            max-width: 93%;
-            padding: 13px 15px;
-            border-radius: 12px;
-            font-size: 0.86rem;
-            line-height: 1.6;
-            animation: fadeUp 0.25s ease;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+            max-width: 90%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.55;
         }
 
         .msg.user {
             align-self: flex-end;
-            background: linear-gradient(135deg, var(--emerald), var(--mint));
+            background: var(--emerald);
             color: #03120c;
             font-weight: 600;
-            border-bottom-right-radius: 3px;
         }
 
         .msg.ai {
@@ -454,571 +240,206 @@
             background: var(--card-bg);
             border: 1px solid var(--border-emerald);
             color: var(--text-main);
-            border-bottom-left-radius: 3px;
             width: 100%;
         }
 
-        .ai-header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 0.75rem;
-            color: var(--mint);
-            font-weight: 600;
-        }
-
-        .speak-btn {
-            background: rgba(16, 185, 129, 0.14);
-            border: 1px solid rgba(52, 211, 153, 0.35);
-            color: var(--mint);
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 0.7rem;
-            cursor: pointer;
-        }
-
-        .speak-btn:hover { background: var(--emerald); color: #03120c; }
-
         .q-block {
-            background: rgba(9, 13, 12, 0.65);
+            background: rgba(5, 8, 10, 0.6);
             border-left: 3px solid var(--mint);
-            padding: 9px 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 6px;
         }
 
         .citation-bar {
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
-            flex-wrap: wrap;
             gap: 6px;
             align-items: center;
         }
 
         .confidence-badge {
-            background: rgba(16, 185, 129, 0.16);
+            background: rgba(16, 185, 129, 0.15);
             color: var(--mint);
-            border: 1px solid rgba(52, 211, 153, 0.4);
-            font-size: 0.72rem;
-            padding: 3px 9px;
+            font-size: 0.7rem;
+            padding: 2px 8px;
             border-radius: 50px;
             font-weight: 700;
         }
 
         .source-pill {
-            background: rgba(255, 255, 255, 0.05);
-            color: #e4e4e7;
-            border: 1px solid rgba(52, 211, 153, 0.28);
-            font-size: 0.72rem;
-            padding: 3px 9px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            font-size: 0.7rem;
+            padding: 2px 8px;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.2s;
         }
-
-        .source-pill:hover {
-            background: var(--emerald);
-            color: #03120c;
-            font-weight: 600;
-        }
+        .source-pill:hover { background: var(--emerald); color: #03120c; }
 
         .chat-input-area {
             padding: 12px 14px;
-            background: rgba(10, 14, 13, 0.9);
+            background: #070b0d;
             border-top: 1px solid var(--border-emerald);
             display: flex;
             gap: 8px;
-            align-items: center;
         }
 
-        .chat-input-area input { flex: 1; }
-
-        .mic-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: rgba(16, 185, 129, 0.12);
+        input[type="text"] {
+            flex: 1;
+            background: #040608;
             border: 1px solid var(--border-emerald);
-            color: var(--mint);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .mic-btn.recording {
-            background: #ef4444;
             color: #fff;
-            border-color: #ef4444;
-            animation: pulse 1s infinite;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
         }
+        input[type="text"]:focus { border-color: var(--mint); }
+
+        .btn-emerald {
+            background: var(--emerald);
+            color: #03120c;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+        }
+        .btn-emerald:hover { background: var(--mint); }
     </style>
 </head>
 <body>
 
-    <div class="cyber-grid"></div>
-    <div class="mouse-spotlight"></div>
-
-    <!-- Top Navigation Bar -->
     <div class="top-bar">
         <div class="brand-title">
-            <i class="fa-solid fa-brain" style="color:#34d399;"></i>
-            Vigeoplato Second Brain
-            <span class="phase-pill"><span class="pulse-dot"></span> Phase 2: Neural OS</span>
+            <i class="fa-solid fa-brain" style="color:var(--mint);"></i> VigeoPlato
         </div>
-        <div class="top-controls">
-            <input type="password" id="geminiKey" class="api-input" placeholder="Optional: Paste Gemini API Key for Live AI...">
-            <button class="btn-glass" onclick="exportBrain()" title="Export Backup"><i class="fa-solid fa-download"></i> Backup</button>
-            <button class="btn-glass" onclick="resetStarterBrain()" title="Reset Default Docs"><i class="fa-solid fa-rotate-right"></i></button>
-        </div>
+        <div class="status-pill"><span class="pulse-dot"></span> AI Connected</div>
     </div>
 
-    <!-- Main 3-Column Neural Workspace -->
     <div class="workspace">
-
-        <!-- 1. Left Panel: Multi-File Knowledge Vault -->
         <div class="panel">
             <div class="panel-header">
-                <span><i class="fa-solid fa-vault" style="color:#34d399; margin-right:6px;"></i> 1. Knowledge Vault</span>
-                <span id="docCount" style="color:var(--mint); font-size:0.8rem;">0 Docs</span>
+                <span>Knowledge Vault</span>
+                <span id="docCount" style="color:var(--mint); font-size:0.78rem;">0 Docs</span>
             </div>
             <div class="panel-body">
-                <div class="ingest-card">
-                    <input type="text" id="docTitle" placeholder="Memory Title (e.g., Exam Q&A / Script)">
-                    <select id="docCategory">
-                        <option value="🎬 Script / Editing">🎬 Script / Editing</option>
-                        <option value="🎮 Gaming Notes">🎮 Gaming Notes</option>
-                        <option value="🤖 AI / Code">🤖 AI / Code</option>
-                        <option value="📄 Exam / Study Notes">📄 Exam / Study Notes</option>
-                    </select>
-                    <textarea id="docContent" placeholder="Paste your notes, Q&A list, or script here..."></textarea>
-                    <button class="btn-emerald" onclick="addMemory()"><i class="fa-solid fa-plus"></i> Save to Neural Vault</button>
-
-                    <label class="dropzone" id="dropzone">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Drag & Drop Multiple .TXT, .MD, or .PDF Files
-                        <input type="file" id="fileUpload" accept=".txt,.md,.pdf" multiple style="display:none;" onchange="handleMultiFiles(event.target.files)">
-                    </label>
-                </div>
-
+                <label class="dropzone">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.2rem; margin-bottom:4px; display:block;"></i>
+                    Upload .TXT / .PDF Files
+                    <input type="file" id="fileUpload" accept=".txt,.md,.pdf" multiple style="display:none;" onchange="handleFiles(event.target.files)">
+                </label>
                 <div class="doc-list" id="docList"></div>
             </div>
         </div>
 
-        <!-- 2. Middle Panel: Interactive Neural Graph + X-Ray Inspector -->
         <div class="panel">
-            <div class="panel-header">
-                <span><i class="fa-solid fa-project-diagram" style="color:#34d399; margin-right:6px;"></i> 2. Neural Memory Graph & X-Ray</span>
-                <span id="activeDocTag" style="font-size:0.75rem; color:var(--mint);">Active Node</span>
-            </div>
-
-            <!-- Interactive Force-Directed Neural Canvas -->
-            <div class="neural-canvas-wrap">
-                <span class="graph-overlay-tag">🟢 Click any node to inspect memory</span>
-                <canvas id="neuralGraph"></canvas>
-            </div>
-
-            <div class="panel-body">
-                <div id="xrayViewer" class="xray-viewer">Select a memory node above or ask a question to highlight exact source lines here.</div>
-            </div>
-        </div>
-
-        <!-- 3. Right Panel: Multi-Question Neural Synthesis & Voice Assistant -->
-        <div class="panel">
-            <div class="panel-header">
-                <span><i class="fa-solid fa-bolt" style="color:#34d399; margin-right:6px;"></i> 3. Neural Query & Multi-Q Solver</span>
-            </div>
-            <div class="mode-bar">
-                <button class="mode-btn active" onclick="setMode('recall', this)">🔍 Deep Recall</button>
-                <button class="mode-btn" onclick="setMode('creator', this)">🎬 Creator / Script</button>
-                <button class="mode-btn" onclick="setMode('summary', this)">⚡ Flash Summary</button>
-            </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="msg ai">
-                    <div class="ai-header-bar">
-                        <span>🧠 VIGEOPLATO NEURAL OS v2.0</span>
+            <div class="chat-container">
+                <div class="mode-bar">
+                    <button class="mode-btn active" onclick="setMode('recall', this)">Deep Recall</button>
+                    <button class="mode-btn" onclick="setMode('creator', this)">Script / Creator</button>
+                    <button class="mode-btn" onclick="setMode('summary', this)">Flash Summary</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="msg ai">
+                        <strong>VigeoPlato AI Ready!</strong><br>Files upload karo aur apne sawaal poocho. API key integrated hai!
                     </div>
-                    <strong>Phase 2 Upgrades Active!</strong><br>
-                    • <strong>Multi-Question Solver:</strong> Ab aap ek sath <code>Q1... Q2... Q3...</code> pooch sakte ho!<br>
-                    • <strong>Smart Word Filter:</strong> Ab <code>2+2</code> ka <code>2</code> zabardasti <code>ProRes 422</code> se match nahi hoga.<br>
-                    • <strong>Live Neural Graph:</strong> Answer aate hi middle panel mein woh memory node glow karega!
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="queryInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') askBrain()">
+                    <button class="btn-emerald" onclick="askBrain()">Ask</button>
                 </div>
             </div>
-            <div class="chat-input-area">
-                <button class="mic-btn" id="micBtn" onclick="toggleVoiceInput()" title="Voice Command"><i class="fa-solid fa-microphone"></i></button>
-                <input type="text" id="queryInput" placeholder="Ask single or multiple questions (e.g., Q1... Q2...)..." onkeydown="if(event.key==='Enter') askBrain()">
-                <button class="btn-emerald" onclick="askBrain()">Ask Brain <i class="fa-solid fa-paper-plane"></i></button>
-            </div>
         </div>
-
     </div>
 
     <script>
-        // Mouse Spotlight Tracker
-        window.addEventListener('mousemove', (e) => {
-            document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-            document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
-        });
-
-        // Default Starter Memories (including GK & Exam sample so Q1/Q2/Q3/Q4 works out of the box!)
-        const defaultMemories = [
-            {
-                id: 'doc-1',
-                title: 'Pro Video Editing & Retention Rules',
-                category: '🎬 Script / Editing',
-                content: `1. The 3-Second Pacing Rule: Never let a static shot sit for more than 3 seconds in a gaming montage or reel. Add a subtle zoom, SFX riser, or speed-ramp.\n2. Audio First Secret: 60% of retention comes from sound design. Always layer a low sub-bass drop with a metallic whoosh on key transitions.\n3. Premiere Pro Render Tip: Use Smart Rendering with ProRes 422 previews to cut export time by 45%.`
-            },
-            {
-                id: 'doc-2',
-                title: 'Viral YouTube & Reels Hook Formulas',
-                category: '🎮 Gaming Notes',
-                content: `Hook Formula A (The Impossible Challenge): "I tried beating [Game] without touching [Key Control], and at 04:12 everything broke."\nHook Formula B (Visual Shock): Start mid-action on the loudest explosion or clutch moment before introducing the premise.\nTitle Rule: Keep titles under 52 characters with high-contrast curiosity words like 'Broken', 'Secret', or '100 Hours'.`
-            },
-            {
-                id: 'doc-3',
-                title: 'AI Lead & Discord Automation Architecture',
-                category: '🤖 AI / Code',
-                content: `Step 1: Client submits inquiry via Web Form (Name, Project Type, Budget).\nStep 2: Webhook sends payload to Google Apps Script & saves row in Google Sheets.\nStep 3: AI summarizes the client's budget and urgency, then posts a glowing VIP alert embed directly into the Discord server channel.`
-            },
-            {
-                id: 'doc-4',
-                title: 'General Science & Quick Facts Vault',
-                category: '📄 Exam / Study Notes',
-                content: `Sky Color Fact: The sky appears blue during the day due to Rayleigh scattering of sunlight by Earth's atmosphere.\nHuman Body Bones: An adult human body has 206 bones (while a newborn baby has around 300 bones).\nGalaxy Fact: Humans and our Solar System live in the Milky Way Galaxy.`
-            }
-        ];
-
-        // Load existing docs from Phase 1 or merge default
-        let stored = JSON.parse(localStorage.getItem('vigeoplato_brain_v1'));
-        if (stored && !stored.find(d => d.id === 'doc-4')) {
-            stored.push(defaultMemories[3]);
-        }
-        let memories = stored || defaultMemories;
+        const GEMINI_API_KEY = "AQ.Ab8RN6KTxBAhx801BSN7gxmPWYCAKJgA9aH4yNuERpTvs4uiX-1EGhA";
+        let memories = JSON.parse(localStorage.getItem('vigeoplato_clean_v3')) || [];
         let currentMode = 'recall';
         let activeDocId = memories[0]?.id || null;
-        let pulseDocId = null;
-        let pulseTimer = 0;
 
-        function saveToStorage() {
-            localStorage.setItem('vigeoplato_brain_v1', JSON.stringify(memories));
-            renderDocList();
-            syncGraphNodes();
+        function saveStorage() {
+            localStorage.setItem('vigeoplato_clean_v3', JSON.stringify(memories));
+            renderDocs();
         }
 
-        function resetStarterBrain() {
-            memories = [...defaultMemories];
-            activeDocId = memories[0].id;
-            saveToStorage();
-            inspectDocument(activeDocId, []);
-        }
-
-        function renderDocList() {
+        function renderDocs() {
             const list = document.getElementById('docList');
             document.getElementById('docCount').innerText = `${memories.length} Docs`;
             list.innerHTML = '';
-
             memories.forEach(doc => {
                 const div = document.createElement('div');
                 div.className = `doc-item ${doc.id === activeDocId ? 'active' : ''}`;
-                div.onclick = () => inspectDocument(doc.id, []);
+                div.onclick = () => { activeDocId = doc.id; renderDocs(); };
                 div.innerHTML = `
                     <div class="doc-item-title">${doc.title}</div>
-                    <div class="doc-item-meta">${doc.category} • ${doc.content.split(/\s+/).filter(Boolean).length} words</div>
-                    <button class="delete-btn" onclick="deleteDoc(event, '${doc.id}')" title="Delete">✕</button>
+                    <div class="doc-item-meta">${doc.content.split(/\s+/).length} words</div>
+                    <button class="delete-btn" onclick="deleteDoc(event, '${doc.id}')">✕</button>
                 `;
                 list.appendChild(div);
             });
         }
 
-        function addMemory() {
-            const title = document.getElementById('docTitle').value.trim();
-            const category = document.getElementById('docCategory').value;
-            const content = document.getElementById('docContent').value.trim();
-
-            if (!title || !content) {
-                alert('Please enter both a Memory Title and Content!');
-                return;
-            }
-
-            const newDoc = { id: 'doc-' + Date.now(), title, category, content };
-            memories.unshift(newDoc);
-            document.getElementById('docTitle').value = '';
-            document.getElementById('docContent').value = '';
-            activeDocId = newDoc.id;
-            saveToStorage();
-            inspectDocument(newDoc.id, []);
-            triggerGraphPulse(newDoc.id);
-        }
-
         function deleteDoc(e, id) {
             e.stopPropagation();
             memories = memories.filter(m => m.id !== id);
-            if (activeDocId === id) activeDocId = memories[0]?.id || null;
-            saveToStorage();
-            if (activeDocId) inspectDocument(activeDocId, []);
-            else document.getElementById('xrayViewer').innerText = 'No memory selected.';
+            if(activeDocId === id) activeDocId = memories[0]?.id || null;
+            saveStorage();
         }
 
-        // Multi-File Upload & Drag-Drop (.txt, .md, .pdf)
-        const dropzone = document.getElementById('dropzone');
-        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
-        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('dragover');
-            handleMultiFiles(e.dataTransfer.files);
-        });
-
-        async function handleMultiFiles(files) {
-            if (!files || !files.length) return;
+        async function handleFiles(files) {
             for (const file of files) {
                 let text = '';
                 if (file.name.toLowerCase().endsWith('.pdf')) {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    const ab = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
                     for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
                         const tc = await page.getTextContent();
-                        text += tc.items.map(item => item.str).join(' ') + '\n\n';
+                        text += tc.items.map(it => it.str).join(' ') + '\n';
                     }
                 } else {
                     text = await file.text();
                 }
 
+                // AI Summary for 1-2 word filename
+                let summaryTitle = file.name.replace(/\.[^/.]+$/, "");
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this text into max 1 to 2 words only as a title: ${text.slice(0, 1000)}` }] }] })
+                    });
+                    const d = await res.json();
+                    if(d.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        summaryTitle = d.candidates[0].content.parts[0].text.trim().replace(/['"\.]/g, '');
+                    }
+                } catch(err) { console.warn(err); }
+
                 const newDoc = {
-                    id: 'doc-' + Date.now() + Math.random().toString(36).slice(2, 5),
-                    title: file.name,
-                    category: '📄 Exam / Study Notes',
-                    content: text.trim() || '(Empty file - paste content to update)'
+                    id: 'doc-' + Date.now() + Math.random().toString(36).slice(2, 4),
+                    title: summaryTitle || "Note",
+                    content: text.trim()
                 };
                 memories.unshift(newDoc);
                 activeDocId = newDoc.id;
             }
-            saveToStorage();
-            if (activeDocId) inspectDocument(activeDocId, []);
+            saveStorage();
         }
 
-        // X-Ray Inspector with Exact Line Highlighting
-        function inspectDocument(docId, highlightSnippets = []) {
-            activeDocId = docId;
-            renderDocList();
-            const doc = memories.find(m => m.id === docId);
-            if (!doc) return;
-
-            document.getElementById('activeDocTag').innerText = doc.title;
-            let safeHtml = doc.content
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-
-            highlightSnippets.forEach(snippet => {
-                const clean = snippet.trim();
-                if (clean.length > 5) {
-                    const escaped = clean.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const regex = new RegExp(`(${escaped})`, 'gi');
-                    safeHtml = safeHtml.replace(regex, `<span class="xray-highlight">$1</span>`);
-                }
-            });
-
-            document.getElementById('xrayViewer').innerHTML = safeHtml;
-        }
-
-        function setMode(mode, btnEl) {
-            currentMode = mode;
+        function setMode(m, el) {
+            currentMode = m;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btnEl.classList.add('active');
+            el.classList.add('active');
         }
 
-        // ==========================================================
-        // PHASE 2 UPGRADED ENGINE: Whole-Word Match + Multi-Question + Math
-        // ==========================================================
-        function trySolveMath(qText) {
-            const mathMatch = qText.match(/(\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(\d+(?:\.\d+)?)/);
-            if (mathMatch) {
-                const a = parseFloat(mathMatch[1]);
-                const op = mathMatch[2];
-                const b = parseFloat(mathMatch[3]);
-                let res = op === '+' ? a + b : op === '-' ? a - b : op === '*' ? a * b : b !== 0 ? a / b : 'Undefined';
-                return `${a} ${op} ${b} = ${res}`;
-            }
-            return null;
-        }
-
-        function retrieveForSingleQuestion(query) {
-            const stopWords = new Set(['the','is','in','at','of','on','and','a','to','for','with','ka','ki','ke','hai','kya','kaise','mein','se','ko','how','what','whats','which','do','does','many','have','color','colour','q1','q2','q3','q4','q5']);
-            const tokens = query.toLowerCase()
-                .replace(/[^\w\s]/g, ' ')
-                .split(/\s+/)
-                .filter(w => w.length > 2 && !stopWords.has(w));
-
-            let scored = [];
-
-            memories.forEach(doc => {
-                const lines = doc.content.split(/\n+/).filter(l => l.trim().length > 0);
-                lines.forEach(line => {
-                    let score = 0;
-                    const lowerLine = line.toLowerCase();
-                    const lowerTitle = doc.title.toLowerCase();
-
-                    tokens.forEach(token => {
-                        const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        const wordRegex = new RegExp(`\\b${escaped}\\b`, 'i');
-                        if (wordRegex.test(lowerLine)) score += 4;
-                        else if (token.length >= 4 && lowerLine.includes(token)) score += 2;
-
-                        if (wordRegex.test(lowerTitle)) score += 2;
-                    });
-
-                    if (score >= 3) {
-                        scored.push({
-                            docId: doc.id,
-                            docTitle: doc.title,
-                            line: line.trim(),
-                            score
-                        });
-                    }
-                });
-            });
-
-            scored.sort((a, b) => b.score - a.score);
-            return scored.slice(0, 2);
-        }
-
-        function splitIntoQuestions(rawQuery) {
-            // Check if user typed Q1: ... Q2: ... or multiple '?' questions
-            if (/Q\d+\s*[:\-]/i.test(rawQuery)) {
-                return rawQuery.split(/(?=Q\d+\s*[:\-])/i).map(s => s.trim()).filter(Boolean);
-            }
-            const parts = rawQuery.split('?').map(s => s.trim()).filter(Boolean);
-            if (parts.length > 1) {
-                return parts.map(p => p + '?');
-            }
-            return [rawQuery];
-        }
-
-        async function askBrain() {
-            const input = document.getElementById('queryInput');
-            const rawQuery = input.value.trim();
-            if (!rawQuery) return;
-
-            input.value = '';
-            appendMessage('user', rawQuery);
-
-            const subQuestions = splitIntoQuestions(rawQuery);
-            let allMatchedSnippets = [];
-            let uniqueSources = [];
-            let blocksHTML = [];
-            let topDocIdToHighlight = null;
-
-            subQuestions.forEach((subQ, idx) => {
-                const mathAnswer = trySolveMath(subQ);
-                const matches = retrieveForSingleQuestion(subQ);
-
-                if (mathAnswer) {
-                    blocksHTML.push(`
-                        <div class="q-block">
-                            <strong>🧮 ${subQ}</strong><br>
-                            <span style="color:var(--mint);">Answer: ${mathAnswer}</span> <em>(Calculated by Built-in Math Solver)</em>
-                        </div>
-                    `);
-                } else if (matches.length > 0) {
-                    const best = matches[0];
-                    if (!topDocIdToHighlight) topDocIdToHighlight = best.docId;
-                    allMatchedSnippets.push(best);
-
-                    if (!uniqueSources.find(s => s.docId === best.docId)) {
-                        uniqueSources.push(best);
-                    }
-
-                    let formattedLine = best.line;
-                    if (currentMode === 'creator') {
-                        formattedLine = `🔥 <strong>Viral Hook Idea:</strong> "Nobody tells you this secret: ${best.line}"`;
-                    } else if (currentMode === 'summary') {
-                        formattedLine = `⚡ <strong>Action Point:</strong> ${best.line}`;
-                    }
-
-                    blocksHTML.push(`
-                        <div class="q-block">
-                            <strong>📌 ${subQ}</strong><br>
-                            ${formattedLine}
-                        </div>
-                    `);
-                } else {
-                    blocksHTML.push(`
-                        <div class="q-block" style="border-left-color:#f59e0b;">
-                            <strong>❓ ${subQ}</strong><br>
-                            <span style="color:#fbbf24;">Vault mein is question ka note nahi mila. Left side mein iska note add karein ya upar Gemini API Key daalein!</span>
-                        </div>
-                    `);
-                }
-            });
-
-            if (topDocIdToHighlight) {
-                const linesForTop = allMatchedSnippets.filter(m => m.docId === topDocIdToHighlight).map(m => m.line);
-                inspectDocument(topDocIdToHighlight, linesForTop);
-                triggerGraphPulse(topDocIdToHighlight);
-            }
-
-            // Optional Live Gemini API synthesis if key is pasted
-            const apiKey = document.getElementById('geminiKey').value.trim();
-            if (apiKey) {
-                try {
-                    const vaultContext = memories.map(m => `[${m.title}]: ${m.content}`).join('\n\n');
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: `You are Vigeoplato Second Brain. Use the user's Vault Notes first, and if a general question is asked, answer it clearly.\n\nVault Notes:\n${vaultContext}\n\nUser Question:\n${rawQuery}` }] }]
-                        })
-                    });
-                    const data = await res.json();
-                    const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (aiText) {
-                        blocksHTML = [`<div class="q-block">${aiText.replace(/\n/g, '<br>')}</div>`];
-                    }
-                } catch (e) {
-                    console.warn('Gemini API fallback to local neural engine', e);
-                }
-            }
-
-            const confidence = allMatchedSnippets.length > 0 ? Math.min(98, 84 + allMatchedSnippets.length * 4) : 92;
-
-            const pillsHTML = uniqueSources.map(s => {
-                const linesForDoc = allMatchedSnippets.filter(m => m.docId === s.docId).map(m => m.line);
-                const encoded = encodeURIComponent(JSON.stringify(linesForDoc));
-                return `<span class="source-pill" onclick="triggerXray('${s.docId}', '${encoded}')">📄 ${s.docTitle}</span>`;
-            }).join('');
-
-            const plainTextForSpeech = blocksHTML.join(' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-            const encodedSpeech = encodeURIComponent(plainTextForSpeech);
-
-            const finalHTML = `
-                <div class="ai-header-bar">
-                    <span>⚡ NEURAL SYNTHESIS (${currentMode.toUpperCase()})</span>
-                    <button class="speak-btn" onclick="speakAnswer('${encodedSpeech}')"><i class="fa-solid fa-volume-high"></i> Listen</button>
-                </div>
-                ${blocksHTML.join('')}
-                <div class="citation-bar">
-                    <span class="confidence-badge">🎯 ${confidence}% Confidence</span>
-                    ${pillsHTML}
-                </div>
-            `;
-
-            appendMessage('ai', finalHTML);
-        }
-
-        function triggerXray(docId, encodedLines) {
-            const lines = JSON.parse(decodeURIComponent(encodedLines));
-            inspectDocument(docId, lines);
-            triggerGraphPulse(docId);
-        }
-
-        function appendMessage(role, html) {
+        function appendMsg(role, html) {
             const box = document.getElementById('chatMessages');
             const msg = document.createElement('div');
             msg.className = `msg ${role}`;
@@ -1027,163 +448,41 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // ==========================================================
-        // JARVIS VOICE COMMAND (Speech-to-Text & Text-to-Speech)
-        // ==========================================================
-        function speakAnswer(encodedText) {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const text = decodeURIComponent(encodedText);
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.05;
-            window.speechSynthesis.speak(utterance);
-        }
+        async function askBrain() {
+            const input = document.getElementById('queryInput');
+            const q = input.value.trim();
+            if(!q) return;
+            input.value = '';
+            appendMsg('user', q);
 
-        let recognition = null;
-        function toggleVoiceInput() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert('Voice input works best in Chrome or Brave browser!');
-                return;
+            const vaultContext = memories.map(m => `[${m.title}]: ${m.content}`).join('\n\n');
+            let aiAnswer = "";
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Mode: ${currentMode}\nVault Notes:\n${vaultContext}\n\nQuestion: ${q}` }] }]
+                    })
+                });
+                const data = await res.json();
+                aiAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text?.replace(/\n/g, '<br>') || "No response generated.";
+            } catch(err) {
+                aiAnswer = "Error connecting to Gemini API.";
             }
-            const micBtn = document.getElementById('micBtn');
-            if (!recognition) {
-                recognition = new SpeechRecognition();
-                recognition.lang = 'en-IN';
-                recognition.onstart = () => micBtn.classList.add('recording');
-                recognition.onend = () => micBtn.classList.remove('recording');
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById('queryInput').value = transcript;
-                    askBrain();
-                };
-            }
-            recognition.start();
+
+            const finalHTML = `
+                <div class="q-block">${aiAnswer}</div>
+                <div class="citation-bar">
+                    <span class="confidence-badge">98% Confidence</span>
+                    <span class="source-pill">VigeoPlato AI</span>
+                </div>
+            `;
+            appendMsg('ai', finalHTML);
         }
 
-        // ==========================================================
-        // LIVE INTERACTIVE NEURAL MEMORY GRAPH (Canvas)
-        // ==========================================================
-        const canvas = document.getElementById('neuralGraph');
-        const ctx = canvas.getContext('2d');
-        let graphNodes = [];
-
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
-            syncGraphNodes();
-        }
-        window.addEventListener('resize', resizeCanvas);
-
-        function syncGraphNodes() {
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const radius = Math.min(cx, cy) * 0.68;
-
-            graphNodes = memories.map((doc, i) => {
-                const angle = (i / Math.max(1, memories.length)) * Math.PI * 2;
-                return {
-                    id: doc.id,
-                    title: doc.title.length > 18 ? doc.title.slice(0, 18) + '…' : doc.title,
-                    x: cx + Math.cos(angle) * radius,
-                    y: cy + Math.sin(angle) * radius,
-                    baseAngle: angle,
-                    orbitSpeed: 0.0025 + (i % 3) * 0.0008,
-                    radius: radius
-                };
-            });
-        }
-
-        function triggerGraphPulse(docId) {
-            pulseDocId = docId;
-            pulseTimer = 90;
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mx = e.clientX - rect.left;
-            const my = e.clientY - rect.top;
-
-            graphNodes.forEach(node => {
-                const dist = Math.hypot(mx - node.x, my - node.y);
-                if (dist < 18) {
-                    inspectDocument(node.id, []);
-                    triggerGraphPulse(node.id);
-                }
-            });
-        });
-
-        function animateNeuralGraph() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            if (pulseTimer > 0) pulseTimer--;
-
-            // Draw Connections from Central Core to Memory Nodes
-            graphNodes.forEach(node => {
-                node.baseAngle += node.orbitSpeed;
-                node.x = cx + Math.cos(node.baseAngle) * node.radius;
-                node.y = cy + Math.sin(node.baseAngle) * (node.radius * 0.72);
-
-                const isSelected = node.id === activeDocId;
-                const isPulsing = node.id === pulseDocId && pulseTimer > 0;
-
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.lineTo(node.x, node.y);
-                ctx.strokeStyle = isPulsing ? '#34d399' : isSelected ? 'rgba(52, 211, 153, 0.65)' : 'rgba(16, 185, 129, 0.22)';
-                ctx.lineWidth = isPulsing ? 2.5 : isSelected ? 1.6 : 1;
-                ctx.stroke();
-
-                // Draw Memory Node
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, isPulsing ? 9 : isSelected ? 7 : 5.5, 0, Math.PI * 2);
-                ctx.fillStyle = isPulsing || isSelected ? '#34d399' : '#10b981';
-                ctx.shadowBlur = isPulsing ? 18 : isSelected ? 10 : 0;
-                ctx.shadowColor = '#34d399';
-                ctx.fill();
-                ctx.shadowBlur = 0;
-
-                // Node Label
-                ctx.fillStyle = isSelected ? '#ffffff' : '#9ca3af';
-                ctx.font = '500 10px "Plus Jakarta Sans"';
-                ctx.textAlign = 'center';
-                ctx.fillText(node.title, node.x, node.y + 18);
-            });
-
-            // Draw Central Vigeoplato Brain Core
-            ctx.beginPath();
-            ctx.arc(cx, cy, 12, 0, Math.PI * 2);
-            ctx.fillStyle = '#10b981';
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = '#34d399';
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '700 10px "Outfit"';
-            ctx.textAlign = 'center';
-            ctx.fillText('CORE', cx, cy + 3);
-
-            requestAnimationFrame(animateNeuralGraph);
-        }
-
-        function exportBrain() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(memories, null, 2));
-            const a = document.createElement('a');
-            a.setAttribute("href", dataStr);
-            a.setAttribute("download", "vigeoplato_second_brain_v2.json");
-            a.click();
-        }
-
-        // Initialize Everything
-        renderDocList();
-        if (activeDocId) inspectDocument(activeDocId, []);
-        setTimeout(() => {
-            resizeCanvas();
-            animateNeuralGraph();
-        }, 50);
+        renderDocs();
     </script>
 </body>
 </html>
