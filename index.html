@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 1: Personal AI Knowledge Assistant (Core Engine)</title>
+    <!-- PDF.js for real PDF text extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #0b0e11;
+            color: #e4e4e7;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #12171c;
+            border-bottom: 1px solid #27272a;
+        }
+
+        .top-bar h1 {
+            font-size: 1.1rem;
+            color: #34d399;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .phase-badge {
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            color: #a1a1aa;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+
+        .api-box {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .api-box input {
+            background: #090b0e;
+            border: 1px solid #27272a;
+            color: #e4e4e7;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            width: 240px;
+        }
+
+        /* Main Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 340px 1fr 1.2fr;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #27272a;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            background: #14191f;
+            border-bottom: 1px solid #27272a;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Left Panel: Ingestion & Memory List */
+        .ingest-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #27272a;
+        }
+
+        input, select, textarea {
+            background: #12161b;
+            border: 1px solid #2e343b;
+            color: #f4f4f5;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 75px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            background: #10b981;
+            color: #04130e;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.83rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #34d399;
+        }
+
+        .btn-secondary {
+            background: #27272a;
+            color: #e4e4e7;
+        }
+
+        .btn-secondary:hover {
+            background: #3f3f46;
+        }
+
+        .file-label {
+            display: inline-block;
+            background: #1f242d;
+            border: 1px dashed #3f3f46;
+            color: #a1a1aa;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .file-label:hover {
+            border-color: #34d399;
+            color: #34d399;
+        }
+
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .doc-item {
+            background: #13181e;
+            border: 1px solid #27272a;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .doc-item.active {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .doc-item-title {
+            font-weight: 600;
+            font-size: 0.88rem;
+            margin-bottom: 4px;
+            padding-right: 24px;
+        }
+
+        .doc-item-meta {
+            font-size: 0.75rem;
+            color: #a1a1aa;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: transparent;
+            color: #71717a;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+        }
+
+        .delete-btn:hover {
+            color: #ef4444;
+            background: transparent;
+        }
+
+        /* Middle Panel: X-Ray Document Inspector */
+        .xray-viewer {
+            line-height: 1.65;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            color: #d4d4d8;
+        }
+
+        .xray-highlight {
+            background: rgba(16, 185, 129, 0.28);
+            border-bottom: 2px solid #34d399;
+            color: #ffffff;
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Right Panel: AI Brain Chat & Mode Switcher */
+        .mode-bar {
+            display: flex;
+            gap: 6px;
+            padding: 10px 16px;
+            background: #11151a;
+            border-bottom: 1px solid #27272a;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: #181d24;
+            color: #a1a1aa;
+            border: 1px solid #27272a;
+            padding: 7px 8px;
+            font-size: 0.78rem;
+            border-radius: 6px;
+        }
+
+        .mode-btn.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border-color: #10b981;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .msg {
+            max-width: 92%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+
+        .msg.user {
+            align-self: flex-end;
+            background: #10b981;
+            color: #04130e;
+            font-weight: 500;
+        }
+
+        .msg.ai {
+            align-self: flex-start;
+            background: #151a21;
+            border: 1px solid #27272a;
+            color: #e4e4e7;
+        }
+
+        .citation-bar {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #27272a;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .confidence-badge {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .source-pill {
+            background: #1e252e;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .source-pill:hover {
+            border-color: #34d399;
+            color: #34d399;
+        }
+
+        .chat-input-area {
+            padding: 12px 16px;
+            background: #12171c;
+            border-top: 1px solid #27272a;
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <div class="top-bar">
+        <h1>🧠 Vigeoplato Second Brain <span class="phase-badge">Phase 1: Core Engine</span></h1>
+        <div class="api-box">
+            <input type="password" id="geminiKey" placeholder="Optional: Paste Gemini API Key...">
+            <button class="btn-secondary" onclick="exportBrain()">⬇ Backup (.json)</button>
+        </div>
+    </div>
+
+    <!-- Main 3-Column Engine -->
+    <div class="workspace">
+
+        <!-- 1. Left Column: Knowledge Vault -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>1. Knowledge Vault</span>
+                <span id="docCount" style="color:#34d399; font-size:0.8rem;">0 Docs</span>
+            </div>
+            <div class="panel-body">
+                <div class="ingest-form">
+                    <input type="text" id="docTitle" placeholder="Memory Title (e.g., Montage SFX Rules)">
+                    <select id="docCategory">
+                        <option value="🎬 Script / Editing">🎬 Script / Editing</option>
+                        <option value="🎮 Gaming Notes">🎮 Gaming Notes</option>
+                        <option value="🤖 AI / Code">🤖 AI / Code</option>
+                        <option value="📄 Document / PDF">📄 Document / PDF</option>
+                    </select>
+                    <textarea id="docContent" placeholder="Paste your notes, script, or facts here..."></textarea>
+                    <div class="btn-row">
+                        <button style="flex:1;" onclick="addMemory()">+ Save to Brain</button>
+                    </div>
+                    <label class="file-label">
+                        📂 Or Upload .TXT / .MD / .PDF File
+                        <input type="file" id="fileUpload" accept=".txt,.md,.pdf" style="display:none;" onchange="handleFileUpload(event)">
+                    </label>
+                </div>
+
+                <div class="doc-list" id="docList"></div>
+            </div>
+        </div>
+
+        <!-- 2. Middle Column: X-Ray Source Inspector -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>2. X-Ray Source Inspector</span>
+                <span id="activeDocTag" style="font-size:0.75rem; color:#a1a1aa;">Select a memory</span>
+            </div>
+            <div class="panel-body">
+                <div id="xrayViewer" class="xray-viewer">Click any memory on the left (or click a Source Citation in the chat) to inspect and highlight the exact source lines here.</div>
+            </div>
+        </div>
+
+        <!-- 3. Right Column: AI Recall & Creator Assistant -->
+        <div class="panel" style="border-right:none;">
+            <div class="panel-header">
+                <span>3. Neural Query & Synthesis</span>
+            </div>
+            <div class="mode-bar">
+                <button class="mode-btn active" onclick="setMode('recall', this)">🔍 Deep Recall</button>
+                <button class="mode-btn" onclick="setMode('creator', this)">🎬 Creator / Script</button>
+                <button class="mode-btn" onclick="setMode('summary', this)">⚡ Flash Summary</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg ai">
+                    <strong>System Ready!</strong> Maine 3 sample memories load kar di hain. Niche kuch bhi pooch kar test karo, jaise:<br><br>
+                    • <em>"High retention editing ka 3-second rule kya hai?"</em><br>
+                    • <em>"Viral gaming hook kaise likhein?"</em><br>
+                    • <em>"AI lead automation kaise kaam karta hai?"</em>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="queryInput" placeholder="Ask your Second Brain anything..." onkeydown="if(event.key==='Enter') askBrain()">
+                <button onclick="askBrain()">Ask Brain ➤</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Default Starter Memories so User can test immediately
+        const defaultMemories = [
+            {
+                id: 'doc-1',
+                title: 'Pro Video Editing & Retention Rules',
+                category: '🎬 Script / Editing',
+                content: `1. The 3-Second Pacing Rule: Never let a static shot sit for more than 3 seconds in a gaming montage or reel. Add a subtle zoom, SFX riser, or speed-ramp.\n2. Audio First Secret: 60% of retention comes from sound design. Always layer a low sub-bass drop with a metallic whoosh on key transitions.\n3. Premiere Pro Render Tip: Use Smart Rendering with ProRes 422 previews to cut export time by 45%.`
+            },
+            {
+                id: 'doc-2',
+                title: 'Viral YouTube & Reels Hook Formulas',
+                category: '🎮 Gaming Notes',
+                content: `Hook Formula A (The Impossible Challenge): "I tried beating [Game] without touching [Key Control], and at 04:12 everything broke."\nHook Formula B (Visual Shock): Start mid-action on the loudest explosion or clutch moment before introducing the premise.\nTitle Rule: Keep titles under 52 characters with high-contrast curiosity words like 'Broken', 'Secret', or '100 Hours'.`
+            },
+            {
+                id: 'doc-3',
+                title: 'AI Lead & Discord Automation Architecture',
+                category: '🤖 AI / Code',
+                content: `Step 1: Client submits inquiry via Web Form (Name, Project Type, Budget).\nStep 2: Webhook sends payload to Google Apps Script & saves row in Google Sheets.\nStep 3: AI summarizes the client's budget and urgency, then posts a glowing VIP alert embed directly into the Discord server channel.`
+            }
+        ];
+
+        let memories = JSON.parse(localStorage.getItem('vigeoplato_brain_v1')) || defaultMemories;
+        let currentMode = 'recall';
+        let activeDocId = memories[0]?.id || null;
+
+        function saveToStorage() {
+            localStorage.setItem('vigeoplato_brain_v1', JSON.stringify(memories));
+            renderDocList();
+        }
+
+        function renderDocList() {
+            const list = document.getElementById('docList');
+            document.getElementById('docCount').innerText = `${memories.length} Docs`;
+            list.innerHTML = '';
+
+            memories.forEach(doc => {
+                const div = document.createElement('div');
+                div.className = `doc-item ${doc.id === activeDocId ? 'active' : ''}`;
+                div.onclick = () => inspectDocument(doc.id, []);
+                div.innerHTML = `
+                    <div class="doc-item-title">${doc.title}</div>
+                    <div class="doc-item-meta">${doc.category} • ${doc.content.split(/\s+/).length} words</div>
+                    <button class="delete-btn" onclick="deleteDoc(event, '${doc.id}')" title="Delete">✕</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addMemory() {
+            const title = document.getElementById('docTitle').value.trim();
+            const category = document.getElementById('docCategory').value;
+            const content = document.getElementById('docContent').value.trim();
+
+            if (!title || !content) {
+                alert('Please enter both a Title and Content!');
+                return;
+            }
+
+            const newDoc = {
+                id: 'doc-' + Date.now(),
+                title,
+                category,
+                content
+            };
+
+            memories.unshift(newDoc);
+            document.getElementById('docTitle').value = '';
+            document.getElementById('docContent').value = '';
+            activeDocId = newDoc.id;
+            saveToStorage();
+            inspectDocument(newDoc.id, []);
+        }
+
+        function deleteDoc(e, id) {
+            e.stopPropagation();
+            memories = memories.filter(m => m.id !== id);
+            if (activeDocId === id) activeDocId = memories[0]?.id || null;
+            saveToStorage();
+            if (activeDocId) inspectDocument(activeDocId, []);
+            else document.getElementById('xrayViewer').innerText = 'No document selected.';
+        }
+
+        // File Upload (.txt, .md, .pdf)
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            let extractedText = '';
+            if (file.name.endsWith('.pdf')) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    extractedText += textContent.items.map(item => item.str).join(' ') + '\n\n';
+                }
+            } else {
+                extractedText = await file.text();
+            }
+
+            const newDoc = {
+                id: 'doc-' + Date.now(),
+                title: file.name,
+                category: '📄 Document / PDF',
+                content: extractedText.trim()
+            };
+
+            memories.unshift(newDoc);
+            activeDocId = newDoc.id;
+            saveToStorage();
+            inspectDocument(newDoc.id, []);
+        }
+
+        // X-Ray Inspector with Exact Sentence Highlighting
+        function inspectDocument(docId, highlightSnippets = []) {
+            activeDocId = docId;
+            renderDocList();
+            const doc = memories.find(m => m.id === docId);
+            if (!doc) return;
+
+            document.getElementById('activeDocTag').innerText = doc.title;
+            let safeHtml = doc.content
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            highlightSnippets.forEach(snippet => {
+                const cleanSnippet = snippet.trim();
+                if (cleanSnippet.length > 8) {
+                    const escaped = cleanSnippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(${escaped})`, 'gi');
+                    safeHtml = safeHtml.replace(regex, `<span class="xray-highlight">$1</span>`);
+                }
+            });
+
+            document.getElementById('xrayViewer').innerHTML = safeHtml;
+        }
+
+        function setMode(mode, btnEl) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+
+        // Core Retrieval Engine (TF-Keyword Scoring across Sentences)
+        function retrieveRelevantChunks(query) {
+            const stopWords = new Set(['the','is','in','at','of','on','and','a','to','for','with','ka','ki','ke','hai','kya','kaise','mein','se','ko','how','what']);
+            const tokens = query.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
+
+            let scoredResults = [];
+
+            memories.forEach(doc => {
+                const lines = doc.content.split(/\n+/).filter(l => l.trim().length > 0);
+                lines.forEach(line => {
+                    let score = 0;
+                    const lowerLine = line.toLowerCase();
+                    const lowerTitle = doc.title.toLowerCase();
+
+                    tokens.forEach(token => {
+                        if (lowerLine.includes(token)) score += 3;
+                        if (lowerTitle.includes(token)) score += 2;
+                    });
+
+                    if (score > 0) {
+                        scoredResults.push({
+                            docId: doc.id,
+                            docTitle: doc.title,
+                            line: line.trim(),
+                            score
+                        });
+                    }
+                });
+            });
+
+            scoredResults.sort((a, b) => b.score - a.score);
+            return scoredResults.slice(0, 3);
+        }
+
+        async function askBrain() {
+            const input = document.getElementById('queryInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            input.value = '';
+            appendMessage('user', query);
+
+            const matches = retrieveRelevantChunks(query);
+            const maxPossible = Math.max(query.split(/\s+/).length * 3, 6);
+            const topScore = matches[0] ? matches[0].score : 0;
+            const confidence = matches.length > 0 ? Math.min(98, Math.round(68 + (topScore / maxPossible) * 30)) : 0;
+
+            const apiKey = document.getElementById('geminiKey').value.trim();
+            let answerHTML = '';
+
+            if (matches.length === 0) {
+                appendMessage('ai', `Mere Knowledge Vault mein <strong>"${query}"</strong> se juda koi exact note nahi mila. Left panel mein is topic par ek note add karke dekho!`);
+                return;
+            }
+
+            // Automatically highlight the top matched source in X-Ray Inspector
+            const topDocId = matches[0].docId;
+            const matchedLinesForTopDoc = matches.filter(m => m.docId === topDocId).map(m => m.line);
+            inspectDocument(topDocId, matchedLinesForTopDoc);
+
+            // Optional Live Gemini API synthesis if key is provided
+            if (apiKey) {
+                try {
+                    const contextBlock = matches.map(m => `[${m.docTitle}]: ${m.line}`).join('\n');
+                    const modeInstruction = currentMode === 'creator'
+                        ? 'Turn these notes into a viral YouTube/Reel hook, catchy title, and script idea.'
+                        : currentMode === 'summary'
+                        ? 'Summarize these notes into crisp bullet points and immediate action items.'
+                        : 'Answer the user question accurately using ONLY the provided notes.';
+
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: `${modeInstruction}\n\nNotes:\n${contextBlock}\n\nUser Question: ${query}` }] }]
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        answerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
+                    }
+                } catch (err) {
+                    console.warn('API fallback to local engine', err);
+                }
+            }
+
+            // Local Smart Engine Response (Works 100% without API Key)
+            if (!answerHTML) {
+                if (currentMode === 'recall') {
+                    answerHTML = `<strong>🔍 Deep Recall Match:</strong><br><br>` +
+                        matches.map(m => `• "${m.line}"`).join('<br><br>');
+                } else if (currentMode === 'creator') {
+                    answerHTML = `<strong>🎬 Creator Script & Hook Generator:</strong><br><br>` +
+                        `<strong>🔥 Viral Hook Idea:</strong> "Most creators ignore this secret: ${matches[0].line}"<br><br>` +
+                        `<strong>📌 Script Structure from your Vault:</strong><br>` +
+                        matches.map((m, i) => `${i + 1}. ${m.line}`).join('<br>');
+                } else {
+                    answerHTML = `<strong>⚡ Flash Action Summary:</strong><br><br>` +
+                        matches.map(m => `✅ <strong>Key Takeaway:</strong> ${m.line}`).join('<br>');
+                }
+            }
+
+            // Build clickable source pills
+            const uniqueSources = [];
+            matches.forEach(m => {
+                if (!uniqueSources.find(s => s.docId === m.docId)) {
+                    uniqueSources.push(m);
+                }
+            });
+
+            const pillsHTML = uniqueSources.map(s => {
+                const linesForDoc = matches.filter(m => m.docId === s.docId).map(m => m.line);
+                const encodedLines = encodeURIComponent(JSON.stringify(linesForDoc));
+                return `<span class="source-pill" onclick="triggerXray('${s.docId}', '${encodedLines}')">📄 Source: ${s.docTitle}</span>`;
+            }).join('');
+
+            const finalHTML = `
+                ${answerHTML}
+                <div class="citation-bar">
+                    <span class="confidence-badge">⚡ ${confidence}% Match</span>
+                    ${pillsHTML}
+                </div>
+            `;
+
+            appendMessage('ai', finalHTML);
+        }
+
+        function triggerXray(docId, encodedLines) {
+            const lines = JSON.parse(decodeURIComponent(encodedLines));
+            inspectDocument(docId, lines);
+        }
+
+        function appendMessage(role, html) {
+            const box = document.getElementById('chatMessages');
+            const msg = document.createElement('div');
+            msg.className = `msg ${role}`;
+            msg.innerHTML = html;
+            box.appendChild(msg);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function exportBrain() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(memories, null, 2));
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", "vigeoplato_second_brain.json");
+            a.click();
+        }
+
+        // Initialize on load
+        renderDocList();
+        if (activeDocId) inspectDocument(activeDocId, []);
+    </script>
+</body>
+</html>
